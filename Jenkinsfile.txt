@@ -1,0 +1,36 @@
+pipeline {
+
+  agent any
+  
+  stages {
+      stage('clone') {
+            steps {
+                git url:"https://github.com/muhammad197/Fursa-home-work-3.git", branch:'main'
+            }
+        }
+        
+    stage('Build') {
+      steps {
+        sh 'docker build -t btc_to_ils_app:$BUILD_NUMBER .'
+      }
+    }
+     stage('Build Tag') {
+        steps{
+            sh 'docker tag btc_to_ils_app:latest muhammadkrad/btc_to_ils_app:latest'
+        }
+         
+     }
+
+    stage('Push imp') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Doker-hub', passwordVariable: 'pass', usernameVariable: 'username')]) {
+                   
+                    sh 'docker login -u ${username} -p ${pass}'
+                    sh 'docker push muhammadkrad/btc_to_ils_app:latest'
+                }
+            }
+        }
+    }
+
+    
+}
